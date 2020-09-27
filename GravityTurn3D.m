@@ -49,7 +49,7 @@ Isp4=315.2;         %[s]
 T4=2450;       %[N]
 
 
-m_star=1100;     %[kg]
+m_star=1200;     %[kg]
 
 mf1=T1/(Isp1*g);
 mf2=T2/(Isp2*g);
@@ -132,9 +132,9 @@ init_u2=[u1b(end,1); u1b(end,2); u1b(end,3); u1b(end,4); u1b(end,5); u1b(end,6);
 %-------------------------%
 
 
-burn_ratio_3=0.891;    %fraction of fuel burned before cruising : sets apogee altitude
+burn_ratio_3=0.9;    %fraction of fuel burned before cruising : sets apogee altitude
 wait_time_3=0.49;       %in percentage of orbit (0.5 being close to apogee)
-apoapsis_adjuster=0.22;  %Parameter that stops 3rd burn before the end : sets perigee
+apoapsis_adjuster=0.25;  %Parameter that stops 3rd burn before the end : sets perigee
 
 t3a=tb1+tb2:dt:tb1+tb2+burn_ratio_3*tb3;
 gamt3a=0*t3a;
@@ -171,8 +171,8 @@ init_u3c=[u3b(end,1); u3b(end,2); u3b(end,3); u3b(end,4); u3b(end,5); u3b(end,6)
 %% Plots
 
 
-earth_example
-hold on
+% earth_example
+% hold on
 
 x=[u1a(:,1); u1b(:,1); u2(:,1); u3(:,1); u3b(:,1); u3c(:,1)]; %; u4(:,1)
 y=[u1a(:,2); u1b(:,2); u2(:,2); u3(:,2); u3b(:,2); u3c(:,2)]; %; u4(:,2)
@@ -233,7 +233,7 @@ v0=v(end);
 a0=1/(2/(h0)-v0^2/(mu)); %Semi-major axis in m
 
 T=1*2*pi*sqrt((a0/1000)^3/398600);
-t5=0:1:T;
+t5=0:dt:T;
 
 init_u5=[u3c(end,1); u3c(end,2); u3c(end,3); u3c(end,4); u3c(end,5); u3c(end,6); m_star; 0; 0];
 [t5,u5]=ode45(@orbiter3D, t5, init_u5);
@@ -256,9 +256,14 @@ text(u5(Ip,1),u5(Ip,2),u5(Ip,3),"\leftarrow Periapsis ("+hp+" km)"','Color','r',
 disp("Perigee : "+hp+" km")
 disp("Apogee  : "+ha+" km")
 
-% hold off
-%Height plot
-figure(2);
-plot(t1a,(h1a-R)/1000,t1b,(h1b-R)/1000,t2,(h2-R)/1000,t3a,(h3-R)/1000,t3b,(h3b-R)/1000,t3c,(h3c-R)/1000,t5+t3c(end),(Orbit_r-R)/1000); %t4,(h4-R)/1000
-xlabel('Time (s)');
-ylabel('H (km)');
+x_orbit=[x;u5(:,1)];
+y_orbit=[y;u5(:,2)];
+z_orbit=[z;u5(:,3)];
+
+
+% % hold off
+% %Height plot
+% figure(2);
+% plot(t1a,(h1a-R)/1000,t1b,(h1b-R)/1000,t2,(h2-R)/1000,t3a,(h3-R)/1000,t3b,(h3b-R)/1000,t3c,(h3c-R)/1000,t5+t3c(end),(Orbit_r-R)/1000); %t4,(h4-R)/1000
+% xlabel('Time (s)');
+% ylabel('H (km)');

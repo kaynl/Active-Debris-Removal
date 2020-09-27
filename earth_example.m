@@ -39,7 +39,7 @@ axis auto;
 
 % Set initial view
 
-view(0,30);
+view(-30,-3);
 
 axis vis3d;
 
@@ -68,3 +68,29 @@ cdata = imread(image_file);
 
 set(globe, 'FaceColor', 'texturemap', 'CData', cdata, 'FaceAlpha', alpha, 'EdgeColor', 'none');
 
+%% Animated Line
+
+h=animatedline('Color','r','LineWidth',1);
+view(-30,-3);
+
+% Initialize video
+myVideo = VideoWriter('myVideoFile'); %open video file
+myVideo.FrameRate = 100;  %can adjust this, 5 - 10 works well for me
+myVideo.Quality = 100;
+open(myVideo)
+
+ set(gcf, 'Position',  [100, 100, 1000, 1000])
+for k = 1:1500:length(x_orbit)-1499
+    xvec = x_orbit(k:k+1499);
+    yvec = y_orbit(k:k+1499);
+    zvec = z_orbit(k:k+1499);
+    
+    camorbit(0.2,0)
+    addpoints(h,xvec,yvec,zvec)
+    drawnow
+    
+    frame = getframe(gcf); %get frame
+    writeVideo(myVideo, frame);
+end
+
+close(myVideo)
