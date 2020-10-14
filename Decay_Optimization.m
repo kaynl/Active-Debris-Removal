@@ -54,3 +54,32 @@ disp("Ball Radius (m)")
 disp(Ball_sizes(Good_ball_sizes_indexes))
 disp("Minimal Mass of foam for the 6 debris : "+sum(Min_foam_mass)+" kg")
 % disp("Minimal Ball Radius : "+Ball_sizes(Good_ball_sizes_indixes(1))+" m")
+
+%% Final deorbitation
+
+Mothership_area = 1:0.01:5;     %m²
+Final_mass = 1200-200-300;      %Total mass - fuel mass - foam mass
+Final_altitude = [550,500,450,400,350,300];           %km
+
+Deorbiting_mother_time = zeros(length(Mothership_area),length(Final_altitude));
+
+for i=1:length(Mothership_area)
+    for j=1:length(Final_altitude)
+        equivalent_radius = sqrt(Mothership_area(i)/pi);
+        Deorbiting_mother_time(i,j)=Decay_Time(equivalent_radius,0,Final_mass,Final_altitude(j));
+    end
+end
+
+for j=1:length(Final_altitude)
+    semilogy(Mothership_area,Deorbiting_mother_time(:,j))
+    hold on
+end
+
+semilogy(Mothership_area,0*Deorbiting_mother_time(:,1)+25,"Color","red","LineWidth",2)
+
+leg = legend('show');
+title(leg,'Parking Orbits')
+legend("550 km","500 km","450 km","400 km","350 km","300 km", "25 years limit");
+xlabel("Mothership Area (m²)")
+ylabel("Decay Time (years)")
+title("Decay Time as a function of Mothership Area for different Parking Orbits");

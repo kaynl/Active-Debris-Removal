@@ -68,6 +68,8 @@ tb1=mp1*Isp1*g/T1;
 tb2=mp2*Isp2*g/T2;
 tb3=mp3*Isp3*g/T3;
 tb4=mp4*Isp4*g/T4;
+
+
 dt=0.01;
 
 %% Initialization of Ode45
@@ -94,14 +96,14 @@ Pos0=[R*cosd(Lat0)*cosd(Long0) R*cosd(Lat0)*sind(Long0) R*sind(Lat0)];
 
 % Desired orbit
 incl=98.76; % orbit inclination [deg]
-apo=700e3;      %m
-peri=500e3;     %m
+% apo=700e3;      %m
+% peri=500e3;     %m
 
 %-----------------------------%
 %%% Calculations with ode45 %%%
 %-----------------------------%
 
-init_u1a=[Pos0(1);Pos0(2);Pos0(3); 0; 0; 0; mp1+ms1+mp2+ms2+mp3+ms3+m_star;mf1;ve1];
+init_u1a=[Pos0(1);Pos0(2);Pos0(3); 0; 0; 0; mp1+ms1+mp2+ms2+mp3+ms3+mp4+ms4+m_star;mf1;ve1];
 
 %Ode45 function
 [t1a,u1a]=ode45(@Hopper_NoTurn, t1a, init_u1a, opts);
@@ -132,7 +134,7 @@ init_u2=[u1b(end,1); u1b(end,2); u1b(end,3); u1b(end,4); u1b(end,5); u1b(end,6);
 %-------------------------%
 
 
-burn_ratio_3=0.9;    %fraction of fuel burned before cruising : sets apogee altitude
+burn_ratio_3=0.9033;    %fraction of fuel burned before cruising : sets apogee altitude
 wait_time_3=0.49;       %in percentage of orbit (0.5 being close to apogee)
 apoapsis_adjuster=0.25;  %Parameter that stops 3rd burn before the end : sets perigee
 
@@ -192,8 +194,8 @@ phi_pos=atan2d(y,x);
 theta_vit=acosd(vz./v);
 phi_vit=atan2d(vy,vx);
 
-plot3(x,y,z,'Color','#D5730E','LineWidth',2)
-hold on
+%plot3(x,y,z,'Color','#D5730E','LineWidth',2)
+%hold on
 % plot3(u4(:,1),u4(:,2),u4(:,3),'w','LineWidth',1.5)
 
 h1a=sqrt(u1a(:,1).^2+u1a(:,2).^2+u1a(:,3).^2);
@@ -203,6 +205,8 @@ h3=sqrt(u3(:,1).^2+u3(:,2).^2+u3(:,3).^2);
 h3b=sqrt(u3b(:,1).^2+u3b(:,2).^2+u3b(:,3).^2);
 h3c=sqrt(u3c(:,1).^2+u3c(:,2).^2+u3c(:,3).^2);
 % h4=sqrt(u4(:,1).^2+u4(:,2).^2+u4(:,3).^2);
+
+
 
 % % Angle Plot
 % figure(3);
@@ -238,10 +242,10 @@ t5=0:dt:T;
 init_u5=[u3c(end,1); u3c(end,2); u3c(end,3); u3c(end,4); u3c(end,5); u3c(end,6); m_star; 0; 0];
 [t5,u5]=ode45(@orbiter3D, t5, init_u5);
 
-figure(1)
-hold on
-plot3(u5(:,1), u5(:,2), u5(:,3), 'r', 'LineWidth', 1.5)
-text(Pos0(1),Pos0(2),Pos0(3),'Launch Site \rightarrow','Color','#D5730E','HorizontalAlignment','right','FontSize',14,'fontweight', 'bold')
+% figure(1)
+% hold on
+% plot3(u5(:,1), u5(:,2), u5(:,3), 'r', 'LineWidth', 1.5)
+% text(Pos0(1),Pos0(2),Pos0(3),'Launch Site \rightarrow','Color','#D5730E','HorizontalAlignment','right','FontSize',14,'fontweight', 'bold')
 
 
 Orbit_coord=u5(:,1:3);
@@ -260,10 +264,27 @@ x_orbit=[x;u5(:,1)];
 y_orbit=[y;u5(:,2)];
 z_orbit=[z;u5(:,3)];
 
+h_orbit=[h1a;h1b;h2;h3;h3b;h3c];%;Orbit_r
+% hold off
+%Height plot
+figure(2);
+plot(t1a,(h1a-R)/1000,t1b,(h1b-R)/1000,t2,(h2-R)/1000,t3a,(h3-R)/1000,t3b,(h3b-R)/1000,t3c,(h3c-R)/1000,t5+t3c(end),(Orbit_r-R)/1000,'LineWidth',4); %t4,(h4-R)/1000
+xlabel('Time (s)');
+ylabel('H (km)');
 
-% % hold off
-% %Height plot
-% figure(2);
-% plot(t1a,(h1a-R)/1000,t1b,(h1b-R)/1000,t2,(h2-R)/1000,t3a,(h3-R)/1000,t3b,(h3b-R)/1000,t3c,(h3c-R)/1000,t5+t3c(end),(Orbit_r-R)/1000); %t4,(h4-R)/1000
-% xlabel('Time (s)');
-% ylabel('H (km)');
+[azimuth,elevation,r] = cart2sph(x,y,z);
+
+delta_lat = elevation - Lat0;
+delta_long = azimuth - Long0;
+
+a = sin(delta_lat./2).^2 + cos(elevation).*cos(Lat0).*sin(delta_long/2).^2;
+c = 2*atan2(sqrt(a),sqrt(1-a));
+dist = R*c;
+[max_dist, i_max] = max(dist);
+for i=i_max:length(dist)
+   	dist(i)=abs(dist(i)-max_dist)+max_dist;
+end
+plot((dist-dist(1))/1000,(h_orbit-R)/1000);
+xlabel("Horizontal distance (km)")
+ylabel("Vertical distance (km)")
+title("Horizontal distance vs. Vertical distance for the 3 first stages")

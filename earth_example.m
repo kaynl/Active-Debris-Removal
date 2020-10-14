@@ -70,16 +70,16 @@ set(globe, 'FaceColor', 'texturemap', 'CData', cdata, 'FaceAlpha', alpha, 'EdgeC
 
 %% Animated Line
 
-h=animatedline('Color','r','LineWidth',1);
+h=animatedline('Color','w','LineWidth',5);
 view(-30,-3);
 
 % Initialize video
 myVideo = VideoWriter('myVideoFile'); %open video file
-myVideo.FrameRate = 100;  %can adjust this, 5 - 10 works well for me
+myVideo.FrameRate = 25;  %can adjust this, 5 - 10 works well for me
 myVideo.Quality = 100;
 open(myVideo)
 
- set(gcf, 'Position',  [100, 100, 1000, 1000])
+ set(gcf, 'Position',  [100, 100, 2000, 2000])
 for k = 1:1500:length(x_orbit)-1499
     xvec = x_orbit(k:k+1499);
     yvec = y_orbit(k:k+1499);
