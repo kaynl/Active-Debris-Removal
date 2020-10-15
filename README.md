@@ -18,7 +18,7 @@ DELTA V & TIME :
 
 
 
-exatmo.m models the exponential atmosphere
+exatmo.m models the exponential atmosphere (IT IS REQUIRED TO COPY THIS FILE IN THE FOLDERS AS THE LINK HAS NOT BEEN MADE)
 
 
 Thanks to the earth plot from Ryan Gray [1] adapted for the purpose of this project.
